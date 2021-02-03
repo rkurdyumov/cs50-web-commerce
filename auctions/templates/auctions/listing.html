@@ -1,0 +1,84 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+  <h2>Listing: {{ listing.title }}</h2>
+
+  <div class="btn-toolbar mb-3">
+  {% if user.is_authenticated %}
+    <form action="{% url 'listing' listing.id %}" method="post">
+      {% csrf_token %}
+      <div class="btn-group mr-2">
+        {% if watched %}
+          <input class="btn btn-danger btn-sm" type="submit" name="watch" value="unwatch">
+        {% else %}
+          <input class="btn btn-success btn-sm" type="submit" name="watch" value="watch">
+        {% endif %}
+      </div>
+    </form>
+  {% endif %}
+
+  {% if listing.active and listing.owner == user %}
+    <form action="{% url 'listing' listing.id %}" method="post">
+      {% csrf_token %}
+      <input class="btn btn-warning btn-sm" type="submit" name="close" value="close">
+    </form>
+  {% elif not listing.active %}
+    <div class="btn-group mr-2">
+      <button type="button" class="btn btn-secondary btn-sm" disabled>closed</button>
+    </div>
+  {% endif %}
+  </div>
+
+  <img src="{{ listing.image }}" alt="Image for '{{ listing.title }}'" class="img-fluid limit-width"></img>
+
+  <br>
+  <strong>Description: </strong>{{ listing.description }}
+
+  <br>
+  <br>
+  <h4>Price: ${{ listing.price }} [Bids: {{ listing.listing_bids.count }}]</h4>
+  {% if not listing.active %}
+    Winner: <strong>{{ listing.winner | default:"None" }}</strong>
+    {% if listing.winner == user %}
+      [<strong>Congrats! You won!</strong>]
+    {% endif %}
+  {% endif %}
+
+  {% if user.is_authenticated and listing.active %}
+    <form action="{% url 'listing' listing.id %}" method="post">
+      {% csrf_token %}
+      <table>
+        {{ bid_form.as_table }}
+      </table>
+      <input type="submit" name="bid" value="Bid">
+    </form>
+  {% endif %}
+
+  <br>
+  <br>
+  <h4>Details</h4>
+  Listed by: <a href="{% url 'listings' %}?owner={{ listing.owner }}">{{ listing.owner }}</a>
+  <br>
+  Category: <a href="{% url 'listings' %}?category={{ listing.category }}">{{ listing.category | default:"No category listed" }}</a>
+
+  <br>
+  <br>
+  <h4>Comments</h4>
+  <ul>
+    {% for comment in comments %}
+      <li>"{{ comment.text }}" - {{ comment.user }}</li>
+    {% empty %}
+      No comments yet.
+    {% endfor %}
+  </ul>
+
+  {% if user.is_authenticated and listing.active %}
+    <form action="{% url 'listing' listing.id %}" method="post">
+      {% csrf_token %}
+      <table>
+        {{ comment_form.as_table}}
+      </table>
+      <input type="submit" name="comment" value="Comment">
+    </form>
+  {% endif %}
+{% endblock %}

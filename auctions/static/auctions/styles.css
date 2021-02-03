@@ -1,0 +1,11 @@
+body {
+    padding: 10px;
+}
+
+.limit-width {
+    max-width: 500px;
+}
+
+.errorlist {
+    color: red;
+}
