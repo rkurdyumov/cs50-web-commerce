@@ -9,3 +9,8 @@ body {
 .errorlist {
     color: red;
 }
+
+label.required::after {
+    content: ' *';
+    color: red;
+}

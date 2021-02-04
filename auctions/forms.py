@@ -15,6 +15,8 @@ class ListingForm(ModelForm):
       "description": Textarea(attrs={"rows": 4, "cols": 30}),
       "start_bid": TextInput(attrs={"size": 6})
     }
+  required_css_class = 'required'
+
 
 class BidForm(ModelForm):
   class Meta:
